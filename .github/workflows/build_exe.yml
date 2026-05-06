@@ -25,9 +25,9 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install --upgrade pip
-        pip install pyinstaller # Install PyInstaller
-        pip install -r requirements.txt # Install your project's dependencies
+        python -m pip install --upgrade pip
+        python -m pip install pyinstaller
+        python -m pip install -r requirements.txt # Install your project's dependencies
 
     - name: 🔨 Package Application with PyInstaller
       run: pyinstaller --onefile --name growth_analysis growth_analysis.py
@@ -53,7 +53,7 @@ jobs:
 
       - name: 🏷️ Create and Upload Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') # Only runs if triggered by a tag push
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' # Only runs if triggered by a tag push
         with:
           files: ./release_assets/growth_analysis.exe # Path to the downloaded EXE
           prerelease: false
