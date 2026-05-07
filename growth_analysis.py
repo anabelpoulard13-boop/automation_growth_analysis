@@ -3,6 +3,7 @@ import string
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import argparse
 
 def data_table(file_path):
     
@@ -88,27 +89,28 @@ def heat_map(table_data, threshold, file_path, output_folder):
     return pass_wells, fail_wells
 
 def main():
-    file_path = input("Enter the path to your CSV file: ")
+    parser = argparse.ArgumentParser(description=" Analyse growth data in the file")
+    parser.add_argument("file_path", help="Path to the csv file")
+    args = parser.parse_args()
 
     while True:
-        if not os.path.exists(file_path):
-            print(f"✗ File not found: '{file_path}'")
-        elif os.path.isdir(file_path):
+        if not os.path.exists(args.file_path):
+            print(f"✗ File not found: '{args.file_path}'")
+        elif os.path.isdir(args.file_path):
             print(f"✗ That's a folder, not a file. Please include the filename (e.g. /Users/you/Desktop/data.csv)")
-        elif not file_path.lower().endswith('.csv'):
+        elif not args.file_path.lower().endswith('.csv'):
             print(f"✗ File must be a .csv file")
         else:
             break
-        file_path = input("Enter the path to your CSV file: ")
-
-    output_folder = input("Enter the name of the output folder to save results: ").strip()
-    os.makedirs(output_folder, exist_ok=True)
-    print(f'✓ Output folder ready: {output_folder}')
+    
+    output_folder = 'result'
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
 
     threshold = float(input("Enter the threshold value for pass/fail: ").strip())
 
-    table_data = data_table(file_path)
-    pass_wells, fail_wells = heat_map(table_data, threshold, file_path, output_folder)
+    table_data = data_table(args.file_path)
+    pass_wells, fail_wells = heat_map(table_data, threshold, args.file_path, output_folder)
 
 if __name__ == "__main__":
     main()
