@@ -103,7 +103,8 @@ def main():
         else:
             break
     
-    output_folder = 'result'
+    directory = os.path.dirname(args.file_path)
+    output_folder = os.path.join(directory, 'result')
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
 
