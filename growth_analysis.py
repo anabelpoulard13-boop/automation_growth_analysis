@@ -39,7 +39,7 @@ def data_table(file_path):
     print(table_data)
     return table_data
 
-def heat_map(table_data, threshold, file_path):
+def heat_map(table_data, threshold, file_path, output_folder):
     pass_wells = []
     fail_wells = []
 
@@ -70,15 +70,25 @@ def heat_map(table_data, threshold, file_path):
     table.auto_set_font_size(False)
     table.set_fontsize(12)
     table.scale(1.2, 1.2)
-    plt.title(f'Growth Analysis, {file_path}', fontsize = 24)
+    file_name = os.path.basename(file_path).replace('.csv', '')
+    plt.title(f'Growth Analysis, {file_name}', fontsize = 24)
     plt.show()
 
     print(f'Passed wells, {pass_wells}')
     print(f'Failed wells, {fail_wells}')
+
+    heatmap_path = os.path.join(output_folder, f'{file_name}_heatmap.png')
+    fig.savefig(heatmap_path)
+    print(f'✓ Heatmap saved to: {heatmap_path}')
+
+    passed_wells_path = os.path.join(output_folder, f'{file_name}_passed_wells.csv')
+    pd.DataFrame(pass_wells, columns=['Passed Wells']).to_csv(passed_wells_path, index=False)
+    print(f'✓ Passed wells saved to: {passed_wells_path}')
+
     return pass_wells, fail_wells
 
 def main():
-    file_path = input("Enter the path to your CSV file: ")#.strip()
+    file_path = input("Enter the path to your CSV file: ")
 
     while True:
         if not os.path.exists(file_path):
@@ -89,14 +99,16 @@ def main():
             print(f"✗ File must be a .csv file")
         else:
             break
-        file_path = input("Enter the path to your CSV file: ")#.strip()
-    file_name = os.path.basename(file_path).replace('.csv', '')
-    
+        file_path = input("Enter the path to your CSV file: ")
+
+    output_folder = input("Enter the name of the output folder to save results: ").strip()
+    os.makedirs(output_folder, exist_ok=True)
+    print(f'✓ Output folder ready: {output_folder}')
+
     threshold = float(input("Enter the threshold value for pass/fail: ").strip())
 
     table_data = data_table(file_path)
-    pass_wells, fail_wells = heat_map(table_data, threshold, file_path)
-
+    pass_wells, fail_wells = heat_map(table_data, threshold, file_path, output_folder)
 
 if __name__ == "__main__":
     main()
